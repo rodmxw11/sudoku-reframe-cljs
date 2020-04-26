@@ -1,4 +1,4 @@
-p(ns sudoku-reframe-cljs.views
+(ns sudoku-reframe-cljs.views
   (:require
    [re-frame.core :as re-frame]
    [sudoku-reframe-cljs.subs :as subs]
