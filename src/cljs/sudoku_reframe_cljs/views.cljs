@@ -18,8 +18,8 @@
    (for [i sudoku/digits-range]
     (if
       (sorted-cell-set i)
-      [:div.cell-grid-empty {:key i}]
       [:div.cell-grid-digit {:key i} (str i)] ;; todo: make this clickable
+      [:div.cell-grid-empty {:key i}]
       )
     )]
   )

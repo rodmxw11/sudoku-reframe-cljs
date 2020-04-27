@@ -185,6 +185,12 @@
 ;        (flatten-board sudoku-2)
 ;        )
 
+(def sudoku-3
+  (
+    ->>
+    empty-board
+    (lock-cell 1 1 1)
+    ))
 
 ;(->>
 ;  sudoku-1
