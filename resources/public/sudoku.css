@@ -6,6 +6,7 @@
 
 .single-digit {
     font-size: 200%;
+    text-align: center;
 }
 
 .error-cell {
@@ -26,7 +27,7 @@
     grid-template-columns: repeat( 3, 1fr);
     grid-template-rows:    repeat(3, 1fr);
 
-    font-size: 70%;
+    font-size: 90%;
     color: black;
 }
 
