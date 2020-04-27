@@ -13,30 +13,32 @@
 
 (defn display-cell-digits
   [ri ci sorted-cell-set]
-  (vec
-  (for [i sudoku/digits-range]
+  [:div.cell-grid.cell
+   (for [i sudoku/digits-range]
     (if
       (sorted-cell-set i)
       [:div.cell-grid-empty]
-      [:div.cell-grid-digit (str i)]
-      )) ) ;; todo: make this clickable
+      [:div.cell-grid-digit (str i)] ;; todo: make this clickable
+      )
+    )]
   )
+
 
 (defn display-cell
   [ri ci sorted-cell-set]
   (cond
     (sorted-cell-set sudoku/ERROR-FLAG)
-    [:div.error-cell.cell  "ERROR"]
+    [:div.error-cell.cell.single-digit  "ERROR"]
 
     (sorted-cell-set sudoku/INITIALIZED-FLAG)
-    [:div.init-cell.cell [display-single-digit sorted-cell-set]]
+    [:div.init-cell.cell.single-digit [display-single-digit sorted-cell-set]]
 
     (sorted-cell-set sudoku/LOCKED-FLAG)
-    [:div.locked-cell.cell [display-single-digit sorted-cell-set]]
+    [:div.locked-cell.cell.single-digit [display-single-digit sorted-cell-set]]
 
     :else
     ;; [:div.cell]
-    [:div.cell-grid.cell [display-cell-digits ri ci sorted-cell-set]]
+    [display-cell-digits ri ci sorted-cell-set]
     )
   )
 

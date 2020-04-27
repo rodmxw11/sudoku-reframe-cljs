@@ -1,6 +1,11 @@
 
 .cell {
     border: 1px solid black;
+    padding: .3rem;
+}
+
+.single-digit {
+    font-size: 200%;
 }
 
 .error-cell {
@@ -21,7 +26,7 @@
     grid-template-columns: repeat( 3, 1fr);
     grid-template-rows:    repeat(3, 1fr);
 
-    font-size: 30%;
+    font-size: 70%;
     color: black;
 }
 
