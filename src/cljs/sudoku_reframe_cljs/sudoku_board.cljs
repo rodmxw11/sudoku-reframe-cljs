@@ -1,13 +1,36 @@
 ;; sun19apr2020 -- playing around with sudoku data structure
 (ns sudoku-reframe-cljs.sudoku-board)
 
-(def ^:const
+(def ^:const DIM
   "Sudoku board dimension is 9x9"
-  DIM 9)
+  9)
+
+(def ^:const DIM-RANGE
+  (range DIM))
+
+(def ^:const digits-range
+  "Digits 1..9"
+  (range 1 (inc DIM)))
 
 (def all-digits-set
-  "Initial content of a Sudoku cell is a Set of digits 1-9"
-  (into #{} (range 1 (inc DIM))))
+  "Initial content of a Sudoku cell is a *sorted-set*  of digits 1-9"
+  (apply sorted-set digits-range))
+
+(def ^:const LOCKED-FLAG
+  "cell set contains this value if the cell set is locked"
+  0)
+
+(def ^:const INITIALIZED-FLAG
+  "cell set contains this value if the cell set was initialized at board creation time"
+  10)
+
+(def ^:const ERROR-FLAG
+  "cell set contains this value if it is in error"
+  -1)
+
+(def ^:const ERROR-CELL
+  "an error cell"
+  #{ERROR-FLAG})
 
 (def empty-row
   "A sudoku row is 9 cells"
@@ -23,17 +46,17 @@
   (for [row board cell row] cell))
 
 (defn board-solved?
-  "true if board is solved; A sudoku board is solved if every cell set contains the :locked keyword"
+  "true if board is solved; A sudoku board is solved if every cell set contains the LOCKED-FLAG value"
   [board]
-  (every? #(% :locked) (cell-seq board)))
+  (every? #(% LOCKED-FLAG) (cell-seq board)))
 
 (defn board-error?
-  "true if any board cell contains :error keyword"
+  "true if any board cell contains ERROR-FLAG value"
   [board]
-  (not-any? #(% :error) (cell-seq board)))
+  (not-any? #(% ERROR-FLAG) (cell-seq board)))
 
 (defn lock-single-digit
-  "set a :locked digit in a single cell"
+  "set a locked digit in a single cell"
   ([board ri ci digit] (lock-single-digit board ri ci false)) ;; not initializing a cell
   ([board ri ci digit init?]
   (assoc-in
@@ -41,11 +64,11 @@
     [ri ci]                            ;; at these coords
     (if-not
       ((get-in board [ri ci]) digit)   ;; if digit is NOT in cell set
-      #{:error}                        ;; THEN signal cell error
+      ERROR-CELL                       ;; THEN signal cell error
       (if
         init?                             ;; ELSE if initializing board
-        #{:init :locked digit}            ;;      then lock that digit in cell and mark initialized
-        #{:locked digit}                  ;;      else just lock that digit in cell
+        #{INITIALIZED-FLAG LOCKED-FLAG digit}            ;;      then lock that digit in cell and mark initialized
+        #{LOCKED-FLAG digit}                  ;;      else just lock that digit in cell
         )
       ))))
 
@@ -68,10 +91,10 @@
          col-block-set (block-indices (quot ci 3))  ;; col indices of block containing ci
          maybe-disj (fn [cell-set digit]     ;; maybe remove a digit from a cell set
                       (if
-                        (cell-set :locked)  ;; if cell-set is locked
+                        (cell-set LOCKED-FLAG)  ;; if cell-set is locked
                         cell-set            ;; don't change it
                         (let [new-set (disj cell-set digit)]  ;; remove digit from cell-set
-                          (if (empty? new-set) #{:error} new-set) ;; check for empty cell-set
+                          (if (empty? new-set) ERROR-CELL new-set) ;; check for empty cell-set
                         )))
          ]
     (vec (map-indexed
@@ -85,7 +108,7 @@
                                   (if-not
                                     (col-block-set col-j)  ;; if the cell is not in the target block
                                     cell                   ;; then don't change the cell
-                                    (maybe-disj col digit))) ;; else remove digit from cell-set
+                                    (maybe-disj cell digit))) ;; else remove digit from cell-set
                                  row))
 
                :else  ;; default: this is a row that is not in the target block
@@ -158,7 +181,7 @@
 (defn flatten-board [board]
   (for [ri (range DIM) ci (range DIM)] [ri ci (get-in board [ri ci])]))
 
-;(remove (fn [[ri ci cell-set]] (or (cell-set :locked) (> (count cell-set) 3)))
+;(remove (fn [[ri ci cell-set]] (or (cell-set LOCKED-FLAG) (> (count cell-set) 3)))
 ;        (flatten-board sudoku-2)
 ;        )
 
@@ -173,7 +196,7 @@
 ;  (lock-cell 6 8 1)
 ;  (lock-cell 6 6 5)
 ;  flatten-board
-;  (remove (fn [[ri ci cell-set]] (or (cell-set :locked) #_(> (count cell-set) 3))))
+;  (remove (fn [[ri ci cell-set]] (or (cell-set LOCKED-FLAG) #_(> (count cell-set) 3))))
 ;  (sort #(compare (count (%1 2)) (count (%2 2))))
 ;  )
 

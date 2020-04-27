@@ -1,0 +1,40 @@
+
+.cell {
+    border: 1px solid black;
+}
+
+.error-cell {
+    color: red;
+}
+
+.init-cell {
+    color: blue;
+    font-weight: bold;
+}
+
+.locked-cell {
+    color: green;
+}
+
+.cell-grid {
+    display: grid;
+    grid-template-columns: repeat( 3, 1fr);
+    grid-template-rows:    repeat(3, 1fr);
+
+    font-size: 30%;
+    color: black;
+}
+
+.cell-grid-empty {
+
+}
+
+.cell-grid-digit {
+
+}
+
+.board-grid {
+    display: grid;
+    grid-template-columns: repeat( 9, 1fr);
+    grid-template-rows:    repeat(9, 1fr);
+}
